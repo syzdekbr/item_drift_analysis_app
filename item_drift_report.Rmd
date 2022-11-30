@@ -1,0 +1,133 @@
+---
+title:  | 
+  | Item Drift
+  | Report
+date: '`r paste("Report Date: ", Sys.Date())`'
+always_allow_html: yes
+pagetitle: "Item Drift Report"
+output: 
+    pdf_document:
+      df_print: default
+      toc: yes
+    html_document:
+      toc: true
+      toc_depth: 3
+      toc_float: true
+      self_contained: yes
+      mode: selfcontained
+      theme: journal
+    word_document:
+      df_print: default
+      toc: yes
+      toc_depth: '4'
+header-includes:
+  - \usepackage{fancyhdr}
+  - \pagestyle{fancy}
+  - \fancyhead[C]{Item Drift Analysis}
+  - \fancyfoot[C]{REPORT}
+  - \fancyfoot[L]{\thepage}
+  - \usepackage{comment}
+  - \usepackage{float}
+  - \usepackage{booktabs}
+  - \usepackage{makecell}
+params:
+  report_format: NA,
+  all_item_plot: NA,
+  separate_item_plot: NA, 
+  item_time_analysis: NA
+---
+```{r setup, include=F}
+# Libraries
+library(kableExtra)
+library(flextable)
+
+# Global options
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
+flextable::set_flextable_defaults(fonts_ignore=TRUE) # or get warnings
+
+# Printing options depending on report format
+if(params$report_format == 'html'){
+  options(knitr.table.format = 'html')
+  } else if (params$report_format == 'pdf') {
+    options(knitr.table.format = 'latex')
+  } else {
+    options(knitr.table.format = 'markdown')
+  }
+```
+
+`r if(params$report_format != "docx") {"\\begin{comment}"}`
+
+# Item Drift Report
+
+`r if(params$report_format != "docx") {"\\end{comment}"}`
+
+## Item Analysis
+
+Logistic regression mixed-effects models were constructed with items and time, grouped into selected intervals, as main effects, with an interaction term, and person nested within any optional grouping variables as random effects. Linear and quadratic models were considered. The best fitting model was compared with a reduced model and any items with significant interaction effects with time were identified. The interpretation is that any items identified below varied in difficulty over time.
+
+```{r item-analysis}
+params$item_time_analysis %>% 
+  table_print(., caption = "Significant Items")
+```
+
+## All Items Plot of Difficulty Over Time
+```{r all-items-plot, results = 'asis'}
+params$all_item_plot
+```
+
+## Individual Items Plot of Difficulty Over Time
+
+```{r separate-items-plot, results = 'asis'}
+params$separate_item_plot
+```
+
+<!-- insert logo -->
+```{r, echo=FALSE, message=F, warning=F, fig.align="center", out.width= '50%', out.height= '50%'}
+# Add logo to output
+library(jpeg)
+library(grid)
+library(gridExtra)
+# url <- "https://provexam.com/wp-content/uploads/2020/10/Prov_Logo_Cropped.png"
+# z <- tempfile()
+# download.file(url,z,mode="wb")
+# img <- readJPEG(z)
+# rimg <- rasterGrob(as.raster(img)) # raster multilayer object
+tg <- textGrob("Prov Exam", gp=gpar(fontfamily = "serif", fontsize = 20))
+sg1 <- textGrob("www.provexam.com", gp=gpar(fontfamily = "sans", fontsize = 10))
+sg2 <- textGrob("150 W Civic Ctr Dr Suite 601", gp=gpar(fontfamily = "sans", fontsize = 10))
+sg3 <- textGrob("Sandy, UT 84070", gp=gpar(fontfamily = "sans", fontsize = 10))
+sg4 <- textGrob("support@provexam.com", gp=gpar(fontfamily = "sans", fontsize = 10))
+sg5 <- textGrob("(801)-733-4455", gp=gpar(fontfamily = "sans", fontsize = 10))
+lay <- rbind(
+             c(1,NA),
+             c(1,NA),
+             c(1,NA),
+             c(1,2),
+             c(1,3),
+             c(1,4),
+             c(1,5),
+             c(1,6),
+             c(1,7),
+             c(1,NA),
+             c(1,NA),
+             c(1,NA),
+             c(1,NA))
+# grid.arrange(rimg, tg, sg1, sg2, sg3, sg4, sg5, layout_matrix = lay)
+grid.arrange(tg, sg1, sg2, sg3, sg4, sg5, layout_matrix = lay)
+grid.rect(width = 1.5, height = .5, gp = gpar(lwd = 2, col = "blue", fill = NA))
+```
+&nbsp;
+
+<!-- html contact links footer -->
+```{r contact_info, echo=FALSE, results= 'asis'}
+  cat("<p style=\"text-align:
+      center;\"><a href=\"https://www.provexam.com\" target = \"_blank\">Prov Exam</a></p>")
+if (params$report_format == "html"){
+  cat("<p style=\"text-align: center;\"><a style=\"color: #0645AD;\" href = \"mailto:support@provexam.com?subject = Item Drift&body = Message\"><em>Email Prov for support</em></a></p>")
+}
+```
+
+```{r, include=FALSE}
+options(tinytex.verbose = TRUE)
+```
+
