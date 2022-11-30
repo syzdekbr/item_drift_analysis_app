@@ -8,7 +8,6 @@ library(shiny)
 library(tidyverse)
 library(shinyBS)
 
-
 # Sample Data -------------------------------------------------------------
 
 ###*** Create sample data with person, date, person groups, and 0,1 scores for 5 items. 
@@ -328,19 +327,6 @@ server <- function(input, output) {
         )
       }
     )
-    
-    # output$generate_report <- downloadHandler(
-    #   # For PDF output, change this to "report.pdf"
-    #   filename = "report.pdf",
-    #   content <- function(file) {
-    #     tempReport <- file.path(tempdir(), "practice.Rmd")
-    #     file.copy("practice.Rmd", tempReport, overwrite = TRUE)
-    #     rmarkdown::render(tempReport, params = list(), output_format = 'pdf_document', envir = new.env(parent = globalenv()))
-    #     file.copy(file.path(tempdir(), 'report.pdf'), file)
-    # 
-    #   },
-    #   contentType = "application.pdf"
-    # )
 } # End Server section
 
 # Run the application 
